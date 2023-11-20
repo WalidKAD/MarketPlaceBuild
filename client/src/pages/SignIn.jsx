@@ -1,13 +1,13 @@
-
 import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
-
+import { useDispatch, useSelector } from "react-redux";
+import { signInStart, signInSuccess,signInFailure } from "../redux/user/userSlice";
 
 export default function SignIp() {
   const [formData, setFormData] = useState ({});
-  const [error, setError] = useState(null);
-  const [loading, setLoding] = useState(false);
+  const { loading, error } = useSelector((state) => state.user);
   const navigate = useNavigate();
+  const dispatch = useDispatch();
   const handleChange = (e) => {
     setFormData(
       {
@@ -20,7 +20,7 @@ const handleSubmit = async (e) => {
 
   try {
 
-    setLoding(true);
+    dispatch(signInStart());
   const res = await fetch('/api/auth/signIn', {
     method: 'POST',
     headers: {
@@ -29,20 +29,17 @@ const handleSubmit = async (e) => {
     body: JSON.stringify(formData),    
   });
   const data = await res.json();
+  console.log(data);
   if(data.success === false) {
-    setLoding(false);
-    setError(data.message);
+    dispatch(signInFailure(data.message));
     return;
   }
-  setLoding(false);
-  setError(null);
+  dispatch(signInSuccess(data));
   navigate('/');
   } catch (error) {
-    setLoding(false);
-    setError(error.message);
+   dispatch(signInFailure(error.message));
   }
 };
-console.log(formData);
   return (
     <div className='p-3 max-w-lg max-auto'>
       <h1 className='text-3xl text-center font-semibold my-7'>Sign in</h1>
