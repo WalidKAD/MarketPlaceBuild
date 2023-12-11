@@ -27,7 +27,6 @@ export default function Profile() {
   const [updateSuccess, setUpdateSuccess] = useState(false);
   const dispatch = useDispatch();
 
-
   // firebase storage
   // allow read;
   // allow write: if
@@ -36,7 +35,7 @@ export default function Profile() {
 
 
   useEffect(() => {
-    if (file) {
+    if(file) {
       handleFileUpload(file);
     }
   }, [file]);
@@ -50,10 +49,9 @@ export default function Profile() {
     uploadTask.on(
       'state_changed',
     (snapshot) => {
-      const progress = (snapshot.bytesTransferred / snapshot.totalBytes) * 
-      100;
+      const progress = (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
       setFilePerc(Math.round(progress));
-    },
+    });
     (error) => {
       setFileUploadError(true);
     },
@@ -62,7 +60,6 @@ export default function Profile() {
       setFormData({ ...formData, avatar: downloadURL })
       );
     }
-    );
   };
 
   const handleChange = (e) => {
