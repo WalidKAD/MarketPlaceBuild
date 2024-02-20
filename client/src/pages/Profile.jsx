@@ -17,8 +17,8 @@ import {
   signOutUserStart,
 } from "../redux/user/userSlice";
 import { useDispatch } from "react-redux";
-import { Await, Link } from "react-router-dom";
-import { getUserListings } from "../../../api/controllers/user.controller";
+import { Link } from "react-router-dom";
+//import { getUserListings } from "../../../api/controllers/user.controller";
 export default function Profile() {
   const fileRef = useRef(null);
   const { currentUser, loading, error } = useSelector((state) => state.user);
@@ -26,7 +26,7 @@ export default function Profile() {
   const [filePerc, setFilePerc] = useState(0);
   const [fileUploadError, setFileUploadError] = useState(false);
   const [formData, setFormData] = useState({});
-  const [updateSuccess, setUpdateSuccess] = useState(false);
+  const [updateSuccess] = useState(false);
   const [showListingsError, setShowListingsError] = useState(false);
   const [userListings, setUserListings] = useState([]);
   const dispatch = useDispatch();
@@ -136,6 +136,25 @@ export default function Profile() {
       setUserListings(data);
     } catch (error) {
       setShowListingsError(true);
+    }
+  };
+
+  const handleListingDelete = async (listingId) => {
+    try {
+      const res = await fetch(`/api/listing/delete/${listingId}`, {
+        method: "DELETE",
+      });
+      const data = await res.json();
+      if (data.success === false) {
+        console.log(data.message);
+        return;
+      }
+
+      setUserListings((prev) =>
+        prev.filter((listing) => listing._id !== listingId)
+      );
+    } catch (error) {
+      console.log(error.message);
     }
   };
 
@@ -249,7 +268,11 @@ export default function Profile() {
               </Link>
 
               <div className="flex flex-col item-center">
-                <button className="text-red-700 uppercase">Delelte</button>
+                <button
+                  onClick={() => handleListingDelete(listing._id)}
+                  className="text-red-700 uppercase">
+                  Delelte
+                </button>
                 <button className="text-green-700 uppercase">Edit</button>
               </div>
             </div>
